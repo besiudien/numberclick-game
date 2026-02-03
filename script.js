@@ -82,16 +82,16 @@ function triggerWinConfetti() {
 function showModal(title, message, actionText, actionCallback) {
     modalTitle.textContent = title;
     modalMessage.textContent = message;
-    modalAction.textContent = actionText;
 
-    // Remove old event listeners to prevent stacking
-    const newButton = modalAction.cloneNode(true);
-    modalAction.parentNode.replaceChild(newButton, modalAction);
-
-    // Update reference
+    // Get the current button element from the DOM
     const currentActionBtn = document.getElementById('modal-action');
+    currentActionBtn.textContent = actionText;
 
-    currentActionBtn.addEventListener('click', () => {
+    // Remove old event listeners to prevent stacking by cloning and replacing
+    const newButton = currentActionBtn.cloneNode(true);
+    currentActionBtn.parentNode.replaceChild(newButton, currentActionBtn);
+
+    newButton.addEventListener('click', () => {
         messageModal.classList.add('hidden');
         if (actionCallback) actionCallback();
     });
