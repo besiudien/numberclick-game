@@ -1,21 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Number Clicker Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Righteous&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
+
 <body>
     <h1>Number Clicker Game</h1>
     <div id="game-info">
-        <span>Level: <span id="level">1</span></span>
+        <div class="info-item">Level: <span id="level">1</span></div>
+        <div class="info-item">Next: <span id="next-number">1</span></div>
+        <div class="info-item">Time: <span id="timer">30</span>s</div>
     </div>
     <div id="game-board"></div>
+
+    <!-- Custom Modal -->
+    <div id="message-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="modal-title">Title</h2>
+            <p id="modal-message">Message</p>
+            <button id="modal-action">Action</button>
+        </div>
+    </div>
+
     <div id="win-screen" class="hidden">
         <h2>🏆 You Win! 🏆</h2>
         <button id="play-again">Play Again</button>
     </div>
     <script src="script.js"></script>
 </body>
+
 </html>

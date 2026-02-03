@@ -1,52 +1,204 @@
 body {
-    font-family: sans-serif;
+    font-family: 'Righteous', cursive;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f0f0f0;
+    justify-content: center;
+    /* Center vertically */
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
     margin: 0;
+    height: 100dvh;
+    /* Dynamic Viewport Height for iOS */
+    overflow: hidden;
+    /* No scrolling */
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    touch-action: manipulation;
+    /* Improves touch response */
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 h1 {
-    margin: 20px;
+    margin: 15px 0;
+    /* Reduced margin */
+    font-size: 2.5em;
+    /* Slightly smaller */
+    letter-spacing: 2px;
+    animation: float 3s ease-in-out infinite;
+    flex-shrink: 0;
+    /* Prevent shrinking */
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
 }
 
 #game-info {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     font-size: 1.2em;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 25px;
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    display: flex;
+    gap: 20px;
+}
+
+.info-item {
+    font-weight: bold;
+}
+
+#next-number {
+    color: #ffd700;
+    font-size: 1.2em;
+}
+
+#timer {
+    color: #ff4757;
+    font-family: 'Fredoka One', cursive;
 }
 
 #game-board {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 5px;
+    grid-template-columns: repeat(8, 1fr);
+    /* 8 columns for 40 items = 5 rows */
+    gap: 8px;
     width: 90vw;
     max-width: 800px;
-    padding: 10px;
-    border: 2px solid #ccc;
-    background-color: #fff;
+    /* Calculate height to fit or use aspect ratio, but auto-fit is better for flexibility */
+    padding: 15px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    flex-shrink: 1;
+    /* Allow shrinking if needed */
+    margin-bottom: 20px;
+    touch-action: manipulation;
 }
 
 .number-cell {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 40px;
-    background-color: #e0e0e0;
-    border-radius: 5px;
+    height: 45px;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    border-radius: 12px;
     cursor: pointer;
     user-select: none;
-    transition: background-color 0.2s;
+    font-family: 'Fredoka One', cursive;
+    color: #333;
+    font-size: 1.2em;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 -2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    text-shadow: none;
+    opacity: 0;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    -webkit-tap-highlight-color: transparent;
+    /* Remove tap highlight on mobile */
 }
 
-.number-cell:hover {
-    background-color: #d0d0d0;
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@media (hover: hover) {
+    .number-cell:hover {
+        transform: translateY(-5px) scale(1.1);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 6px rgba(0, 0, 0, 0.23);
+        z-index: 10;
+        background: white;
+    }
+}
+
+/* Shine effect */
+.number-cell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 100%);
+    transform: skewX(-25deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -75%;
+    }
+
+    20% {
+        left: 125%;
+    }
+
+    100% {
+        left: 125%;
+    }
 }
 
 .number-cell.clicked {
-    background-color: #a0a0a0;
-    color: #555;
-    pointer-events: none; /* Disable further clicks */
+    animation: clickPop 0.4s forwards;
+    pointer-events: none;
+}
+
+@keyframes clickPop {
+    0% {
+        transform: scale(1);
+        background-color: #ffd700;
+        color: white;
+    }
+
+    50% {
+        transform: scale(1.4);
+        opacity: 1;
+        box-shadow: 0 0 20px #ffd700;
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
 }
 
 #win-screen {
@@ -54,23 +206,135 @@ h1 {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.7);
+    height: 100dvh;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     color: white;
-    font-size: 2em;
+    z-index: 100;
+}
+
+#win-screen h2 {
+    font-size: 4em;
+    margin-bottom: 20px;
+    animation: bounce 2s infinite;
+    text-shadow: 0 0 10px #ff00de, 0 0 20px #ff00de, 0 0 30px #ff00de;
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-30px);
+    }
+
+    60% {
+        transform: translateY(-15px);
+    }
 }
 
 #play-again {
-    font-size: 0.5em;
-    padding: 10px 20px;
-    margin-top: 20px;
+    font-size: 1.5em;
+    padding: 15px 40px;
+    margin-top: 30px;
     cursor: pointer;
+    background: linear-gradient(45deg, #ff00cc, #3333ff);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    font-family: 'Righteous', cursive;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    touch-action: manipulation;
+}
+
+@media (hover: hover) {
+    #play-again:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    }
 }
 
 .hidden {
     display: none !important;
+}
+
+/* Modal specific styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #fff, #f0f0f0);
+    padding: 30px 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    color: #333;
+    max-width: 400px;
+    width: 90%;
+    border: 2px solid white;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#modal-title {
+    font-family: 'Righteous', cursive;
+    color: #b21f1f;
+    /* Standard red/brand color */
+    margin-top: 0;
+}
+
+#modal-message {
+    font-size: 1.2em;
+    margin: 20px 0;
+    color: #555;
+    font-family: system-ui;
+}
+
+#modal-action {
+    background: linear-gradient(45deg, #11998e, #38ef7d);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    color: white;
+    font-size: 1.1em;
+    cursor: pointer;
+    font-family: 'Fredoka One', cursive;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#modal-action:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    #game-board {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    h1 {
+        font-size: 2em;
+    }
 }
