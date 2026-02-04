@@ -17,18 +17,32 @@
 
 <body>
     <h1>Clicker game</h1>
-    <div id="game-info">
-        <div class="info-item">Level: <span id="level">1</span></div>
-        <div class="info-item">Next: <span id="next-number">1</span></div>
-        <div class="info-item">Time: <span id="timer">30</span>s</div>
-        <div class="info-item">💰: <span id="gold">0</span></div>
-    </div>
-    <div id="game-board"></div>
+    <div id="header-controls">
+        <div id="game-info">
+            <div class="info-item">Level: <span id="level">1</span></div>
+            <div class="info-item">Next: <span id="next-number">1</span></div>
+            <div class="info-item">Time: <span id="timer">30</span>s</div>
+            <div class="info-item">💰: <span id="gold">0</span></div>
+        </div>
 
-    <div id="power-ups">
-        <button id="btn-hint" class="power-up-btn" title="Hint (Costs 10 Gold)">💡 Hint (10)</button>
-        <button id="btn-time" class="power-up-btn" title="Bonus Time (Costs 20 Gold)">⏳ Time (20)</button>
+        <div id="power-ups">
+            <button id="btn-hint" class="power-up-btn" title="Hint (Costs 10 Gold)">💡 Hint (10)</button>
+            <button id="btn-time" class="power-up-btn" title="Bonus Time (Costs 20 Gold)">⏳ Time (20)</button>
+        </div>
+
+        <div id="save-load-container">
+            <button id="btn-toggle-save" class="toggle-btn">💾 Save/Load</button>
+            <div id="save-load-panel" class="collapsed">
+                <input type="text" id="save-code" placeholder="Code..." maxlength="20">
+                <div class="save-load-btns">
+                    <button id="btn-save" class="system-btn">💾 Save</button>
+                    <button id="btn-load" class="system-btn">📂 Load</button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div id="game-board"></div>
 
     <!-- Custom Modal -->
     <div id="message-modal" class="modal hidden">

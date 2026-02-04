@@ -63,18 +63,96 @@ h1 {
     }
 }
 
+#header-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 20px;
+    width: 95vw;
+    max-width: 1200px;
+}
+
 #game-info {
-    margin-bottom: 15px;
-    font-size: 1.2em;
+    font-size: 1.1em;
     background: rgba(255, 255, 255, 0.1);
-    padding: 8px 25px;
+    padding: 8px 15px;
     border-radius: 50px;
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    flex-shrink: 0;
     display: flex;
-    gap: 15px;
+    gap: 12px;
+}
+
+#power-ups {
+    display: flex;
+    gap: 10px;
+}
+
+.power-up-btn {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 15px;
+    border-radius: 50px;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+}
+
+#save-load-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 100;
+}
+
+.toggle-btn {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    padding: 8px 15px;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+}
+
+#save-load-panel {
+    position: absolute;
+    top: 45px;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(30, 30, 30, 0.9);
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    max-height: 200px;
+    opacity: 1;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 220px;
+}
+
+#save-load-panel.collapsed {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
 }
 
 .info-item {
@@ -93,22 +171,62 @@ h1 {
 
 #game-board {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    /* 8 columns for 40 items = 5 rows */
-    gap: 8px;
-    width: 90vw;
-    max-width: 800px;
-    /* Calculate height to fit or use aspect ratio, but auto-fit is better for flexibility */
-    padding: 15px;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.1);
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    width: 95vw;
+    max-width: 1000px;
+    padding: 20px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    flex-shrink: 1;
-    /* Allow shrinking if needed */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     margin-bottom: 20px;
-    touch-action: manipulation;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #game-board {
+        grid-template-columns: repeat(8, 1fr);
+        max-width: 95vw;
+        padding: 10px;
+    }
+
+    #header-controls {
+        gap: 8px;
+    }
+
+    .info-item,
+    .power-up-btn,
+    .toggle-btn {
+        font-size: 0.85em;
+    }
+}
+
+@media (max-width: 480px) {
+    #game-board {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    #header-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #game-info {
+        width: 90%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    #save-load-panel {
+        right: 50%;
+        transform: translateX(50%);
+    }
+
+    #save-load-panel.collapsed {
+        transform: translateX(50%) translateY(-10px);
+    }
 }
 
 .number-cell {
@@ -401,10 +519,116 @@ h1 {
         transform: scale(1);
         background: rgba(255, 215, 0, 0.4);
     }
+
     to {
         transform: scale(1.15);
         background: rgba(255, 215, 0, 0.7);
     }
+}
+
+#save-load-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-top: 5px;
+    z-index: 50;
+    transition: all 0.3s ease;
+}
+
+.toggle-btn {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px 50px 0 0;
+    padding: 8px 20px;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    border-bottom: none;
+}
+
+.toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    padding-top: 12px;
+}
+
+#save-load-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 0 0 20px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    max-height: 200px;
+    opacity: 1;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 250px;
+}
+
+#save-load-panel.collapsed {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    border-top: none;
+    border-bottom: none;
+    pointer-events: none;
+}
+
+#save-code {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 8px 15px;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    text-align: center;
+    outline: none;
+    transition: all 0.3s ease;
+    width: 200px;
+}
+
+#save-code:focus {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: #3333ff;
+    box-shadow: 0 0 10px rgba(51, 51, 255, 0.5);
+}
+
+.save-load-btns {
+    display: flex;
+    gap: 10px;
+}
+
+.system-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 15px;
+    border-radius: 50px;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.system-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+#btn-save:hover {
+    border-color: #38ef7d;
+}
+
+#btn-load:hover {
+    border-color: #11998e;
 }
 
 /* Responsive adjustments */

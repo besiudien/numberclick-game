@@ -13,6 +13,11 @@ const messageModal = document.getElementById('message-modal');
 const modalTitle = document.getElementById('modal-title');
 const modalMessage = document.getElementById('modal-message');
 const modalAction = document.getElementById('modal-action');
+const saveCodeInput = document.getElementById('save-code');
+const btnSave = document.getElementById('btn-save');
+const btnLoad = document.getElementById('btn-load');
+const btnToggleSave = document.getElementById('btn-toggle-save');
+const saveLoadPanel = document.getElementById('save-load-panel');
 
 const MAX_LEVEL = 10;
 const NUMBERS_PER_LEVEL = 40;
@@ -20,6 +25,12 @@ const POOL_SIZE = 99; // Random numbers between 1 and 99
 const TIME_LIMIT = 30; // 30 seconds per number
 const HINT_COST = 10;
 const TIME_COST = 20;
+
+// JSONBin.io Configuration
+// IMPORTANT: Paste your JSONBin.io API Key and Bin ID here
+const JSONBIN_API_KEY = '$2a$10$HFVex5EYUrN8HpjFucPobeQIS9pvZhd3OGWPK6YOJsyIHpxC37Yle';
+const JSONBIN_BIN_ID = '6983434cae596e708f109f73';
+const JSONBIN_BASE_URL = 'https://api.jsonbin.io/v3/b';
 
 // Audio Setup
 const bgMusic = new Audio('./music/chamber_music.mp3');
@@ -44,6 +55,7 @@ let currentIndex = 0;
 let targetSequence = [];
 let timerInterval;
 let timeLeft = TIME_LIMIT;
+let timerStarted = false;
 
 const LEVEL_WALLPAPERS = [
     './wallpapers/wallpaper_1.jpg',
@@ -68,6 +80,130 @@ function loadGame() {
     if (saved) {
         gameState = JSON.parse(saved);
         updateUI();
+    }
+}
+
+async function saveGameByCode() {
+    const code = saveCodeInput.value.trim();
+    if (!code) {
+        showModal("Error", "Please enter a secret code to save your progress.", "OK");
+        return;
+    }
+
+    if (JSONBIN_API_KEY === 'PASTE_YOUR_API_KEY_HERE' || JSONBIN_BIN_ID === 'PASTE_YOUR_BIN_ID_HERE') {
+        showModal("Setup Required", "Please configure your JSONBin API Key and Bin ID in script.js to enable cloud saving.", "OK");
+        return;
+    }
+
+    btnSave.textContent = "⏳ Saving...";
+    btnSave.disabled = true;
+
+    try {
+        // 1. Get existing data from JSONBin
+        const response = await fetch(`${JSONBIN_BASE_URL}/${JSONBIN_BIN_ID}`, {
+            headers: { 'X-Master-Key': JSONBIN_API_KEY }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Fetch failed (${response.status}): ${errorData.message || 'Unknown error'}`);
+        }
+
+        const result = await response.json();
+        console.log("JSONBin Data fetched:", result);
+
+        // JSONBin v3 usually returns { record: ..., metadata: ... }
+        let allSaves = result.record || {};
+
+        // Ensure allSaves is an object (in case the bin was initialized differently)
+        if (typeof allSaves !== 'object' || Array.isArray(allSaves)) {
+            allSaves = {};
+        }
+
+        // 2. Update with new save
+        allSaves[code] = {
+            level: gameState.level,
+            gold: gameState.gold,
+            timestamp: new Date().toISOString()
+        };
+
+        // 3. Push back to JSONBin
+        const updateResponse = await fetch(`${JSONBIN_BASE_URL}/${JSONBIN_BIN_ID}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': JSONBIN_API_KEY
+            },
+            body: JSON.stringify(allSaves)
+        });
+
+        if (updateResponse.ok) {
+            showModal("Cloud Saved!", `Progress for "${code}" synced to cloud!`, "OK");
+        } else {
+            const errorData = await updateResponse.json();
+            throw new Error(`Update failed (${updateResponse.status}): ${errorData.message || 'Unknown error'}`);
+        }
+    } catch (error) {
+        console.error("Cloud Save Detailed Error:", error);
+        showModal("Cloud Error", `Failed to save: ${error.message}. Falls back to local save.`, "OK");
+        localStorage.setItem(`save_code_${code}`, JSON.stringify(gameState));
+    } finally {
+        btnSave.textContent = "💾 Save";
+        btnSave.disabled = false;
+    }
+}
+
+async function loadGameByCode() {
+    const code = saveCodeInput.value.trim();
+    if (!code) {
+        showModal("Error", "Please enter a secret code to load your progress.", "OK");
+        return;
+    }
+
+    if (JSONBIN_API_KEY === 'PASTE_YOUR_API_KEY_HERE' || JSONBIN_BIN_ID === 'PASTE_YOUR_BIN_ID_HERE') {
+        showModal("Setup Required", "Please configure your JSONBin API Key and Bin ID in script.js to enable cloud loading.", "OK");
+        return;
+    }
+
+    btnLoad.textContent = "⏳ Loading...";
+    btnLoad.disabled = true;
+
+    try {
+        const response = await fetch(`${JSONBIN_BASE_URL}/${JSONBIN_BIN_ID}/latest`, {
+            headers: { 'X-Master-Key': JSONBIN_API_KEY }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Fetch failed (${response.status}): ${errorData.message || 'Unknown error'}`);
+        }
+
+        const result = await response.json();
+        console.log("JSONBin Data loaded:", result);
+
+        const allSaves = result.record || {};
+
+        if (allSaves && allSaves[code]) {
+            gameState.level = allSaves[code].level;
+            gameState.gold = allSaves[code].gold;
+            updateUI();
+            createLevel();
+            showModal("Cloud Loaded!", `Progress for "${code}" restored from cloud!`, "OK");
+        } else {
+            showModal("Not Found", `No cloud save found for code: ${code}`, "OK");
+        }
+    } catch (error) {
+        console.error("Cloud Load Detailed Error:", error);
+        showModal("Cloud Error", `Failed: ${error.message}. Checking local...`, "OK");
+        const saved = localStorage.getItem(`save_code_${code}`);
+        if (saved) {
+            gameState = JSON.parse(saved);
+            updateUI();
+            createLevel();
+        }
+    } finally {
+        btnLoad.textContent = "📂 Load";
+        btnLoad.disabled = false;
     }
 }
 
@@ -156,6 +292,7 @@ function showModal(title, message, actionText, actionCallback) {
 // Timer Logic
 function startTimer() {
     clearInterval(timerInterval);
+    timerStarted = true;
     timeLeft = TIME_LIMIT;
     timerDisplay.textContent = timeLeft;
 
@@ -237,8 +374,13 @@ function handleNumberClick(event) {
             nextNumberDisplay.textContent = "Done";
         }
 
-        // Reset timer on correct click
-        startTimer();
+        // Start timer on first correct click, reset on subsequent correct clicks
+        if (!timerStarted) {
+            startTimer();
+        } else {
+            timeLeft = TIME_LIMIT;
+            timerDisplay.textContent = timeLeft;
+        }
 
         if (currentIndex >= targetSequence.length) {
             clearInterval(timerInterval); // Stop timer on level completion
@@ -312,7 +454,12 @@ function createLevel() {
     });
 
     nextNumberDisplay.textContent = targetSequence[currentIndex];
-    startTimer();
+
+    // Reset timer state but don't start it yet
+    clearInterval(timerInterval);
+    timerStarted = false;
+    timeLeft = TIME_LIMIT;
+    timerDisplay.textContent = timeLeft;
 }
 
 // Function to reset and start the game
@@ -330,6 +477,11 @@ function resetGame() {
 playAgainButton.addEventListener('click', resetGame);
 btnHint.addEventListener('click', useHint);
 btnTime.addEventListener('click', addTime);
+btnSave.addEventListener('click', saveGameByCode);
+btnLoad.addEventListener('click', loadGameByCode);
+btnToggleSave.addEventListener('click', () => {
+    saveLoadPanel.classList.toggle('collapsed');
+});
 
 // Initial game start
 loadGame();
