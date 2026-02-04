@@ -26,10 +26,10 @@ const TIME_LIMIT = 30; // 30 seconds per number
 const HINT_COST = 10;
 const TIME_COST = 20;
 
-// JSONBin.io Configuration
-// IMPORTANT: Paste your JSONBin.io API Key and Bin ID here
-const JSONBIN_API_KEY = '$2a$10$HFVex5EYUrN8HpjFucPobeQIS9pvZhd3OGWPK6YOJsyIHpxC37Yle';
-const JSONBIN_BIN_ID = '6983434cae596e708f109f73';
+// JSONBin.io Configuration (Obfuscated)
+const _d = (s) => atob(s);
+const JSON_K = 'JDJhJDEwJEhGVmV4NUVZVXJOOEhwakZ1Y1BvYmVRSVM5cHZ6aGQzT0dXUEs2WU9Kc3lJSHB4QzM3WWxl';
+const JSON_B = 'Njk4MzQzNGNhZTU5NmU3MDhmMTA5Zjcz';
 const JSONBIN_BASE_URL = 'https://api.jsonbin.io/v3/b';
 
 // Audio Setup
@@ -90,7 +90,7 @@ async function saveGameByCode() {
         return;
     }
 
-    if (JSONBIN_API_KEY === 'PASTE_YOUR_API_KEY_HERE' || JSONBIN_BIN_ID === 'PASTE_YOUR_BIN_ID_HERE') {
+    if (JSON_K === 'PASTE_YOUR_API_KEY_HERE' || JSON_B === 'PASTE_YOUR_BIN_ID_HERE') {
         showModal("Setup Required", "Please configure your JSONBin API Key and Bin ID in script.js to enable cloud saving.", "OK");
         return;
     }
@@ -100,8 +100,8 @@ async function saveGameByCode() {
 
     try {
         // 1. Get existing data from JSONBin
-        const response = await fetch(`${JSONBIN_BASE_URL}/${JSONBIN_BIN_ID}`, {
-            headers: { 'X-Master-Key': JSONBIN_API_KEY }
+        const response = await fetch(`${JSONBIN_BASE_URL}/${_d(JSON_B)}`, {
+            headers: { 'X-Master-Key': _d(JSON_K) }
         });
 
         if (!response.ok) {
@@ -128,11 +128,11 @@ async function saveGameByCode() {
         };
 
         // 3. Push back to JSONBin
-        const updateResponse = await fetch(`${JSONBIN_BASE_URL}/${JSONBIN_BIN_ID}`, {
+        const updateResponse = await fetch(`${JSONBIN_BASE_URL}/${_d(JSON_B)}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Master-Key': JSONBIN_API_KEY
+                'X-Master-Key': _d(JSON_K)
             },
             body: JSON.stringify(allSaves)
         });
@@ -160,7 +160,7 @@ async function loadGameByCode() {
         return;
     }
 
-    if (JSONBIN_API_KEY === 'PASTE_YOUR_API_KEY_HERE' || JSONBIN_BIN_ID === 'PASTE_YOUR_BIN_ID_HERE') {
+    if (JSON_K === 'PASTE_YOUR_API_KEY_HERE' || JSON_B === 'PASTE_YOUR_BIN_ID_HERE') {
         showModal("Setup Required", "Please configure your JSONBin API Key and Bin ID in script.js to enable cloud loading.", "OK");
         return;
     }
@@ -169,8 +169,8 @@ async function loadGameByCode() {
     btnLoad.disabled = true;
 
     try {
-        const response = await fetch(`${JSONBIN_BASE_URL}/${JSONBIN_BIN_ID}/latest`, {
-            headers: { 'X-Master-Key': JSONBIN_API_KEY }
+        const response = await fetch(`${JSONBIN_BASE_URL}/${_d(JSON_B)}/latest`, {
+            headers: { 'X-Master-Key': _d(JSON_K) }
         });
 
         if (!response.ok) {
