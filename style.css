@@ -74,7 +74,7 @@ h1 {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
     display: flex;
-    gap: 20px;
+    gap: 15px;
 }
 
 .info-item {
@@ -345,6 +345,68 @@ h1 {
     transform: scale(1.05);
 }
 
+#power-ups {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.power-up-btn {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 20px;
+    border-radius: 50px;
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.power-up-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.power-up-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.power-up-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+#btn-hint:not(:disabled) {
+    border-color: #ffd700;
+}
+
+#btn-time:not(:disabled) {
+    border-color: #38ef7d;
+}
+
+/* Hint Highlight Animation */
+.hint-highlight {
+    animation: hintGlow 1s ease-in-out infinite alternate !important;
+    z-index: 20;
+    box-shadow: 0 0 20px #ffd700, inset 0 0 10px #ffd700 !important;
+    border-color: #ffd700 !important;
+}
+
+@keyframes hintGlow {
+    from {
+        transform: scale(1);
+        background: rgba(255, 215, 0, 0.4);
+    }
+    to {
+        transform: scale(1.15);
+        background: rgba(255, 215, 0, 0.7);
+    }
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
     #game-board {
@@ -353,5 +415,14 @@ h1 {
 
     h1 {
         font-size: 2em;
+    }
+
+    #power-ups {
+        gap: 10px;
+    }
+
+    .power-up-btn {
+        padding: 8px 15px;
+        font-size: 0.9em;
     }
 }

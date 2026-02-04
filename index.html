@@ -5,22 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Number Clicker Game</title>
+    <title>Clicker game</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Righteous&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a2a6c">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 
 <body>
-    <h1>Number Clicker Game</h1>
+    <h1>Clicker game</h1>
     <div id="game-info">
         <div class="info-item">Level: <span id="level">1</span></div>
         <div class="info-item">Next: <span id="next-number">1</span></div>
         <div class="info-item">Time: <span id="timer">30</span>s</div>
+        <div class="info-item">💰: <span id="gold">0</span></div>
     </div>
     <div id="game-board"></div>
+
+    <div id="power-ups">
+        <button id="btn-hint" class="power-up-btn" title="Hint (Costs 10 Gold)">💡 Hint (10)</button>
+        <button id="btn-time" class="power-up-btn" title="Bonus Time (Costs 20 Gold)">⏳ Time (20)</button>
+    </div>
 
     <!-- Custom Modal -->
     <div id="message-modal" class="modal hidden">

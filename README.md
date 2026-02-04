@@ -1,4 +1,4 @@
-# Number Clicker Game
+# Clicker game
 
 A fun, interactive number clicking game with a modern Glassmorphism UI and soothing chamber music.
 

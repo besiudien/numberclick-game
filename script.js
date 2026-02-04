@@ -4,6 +4,9 @@ const nextNumberDisplay = document.getElementById('next-number');
 const timerDisplay = document.getElementById('timer');
 const winScreen = document.getElementById('win-screen');
 const playAgainButton = document.getElementById('play-again');
+const goldDisplay = document.getElementById('gold');
+const btnHint = document.getElementById('btn-hint');
+const btnTime = document.getElementById('btn-time');
 
 // Modal Elements
 const messageModal = document.getElementById('message-modal');
@@ -15,6 +18,8 @@ const MAX_LEVEL = 10;
 const NUMBERS_PER_LEVEL = 40;
 const POOL_SIZE = 99; // Random numbers between 1 and 99
 const TIME_LIMIT = 30; // 30 seconds per number
+const HINT_COST = 10;
+const TIME_COST = 20;
 
 // Audio Setup
 const bgMusic = new Audio('./music/chamber_music.mp3');
@@ -28,13 +33,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { once: true });
 });
 
-let currentLevel = 1;
-// let nextNumberToClick = 1; // DEPRECATED: We now track index in the sorted random sequence
+// Game State
+let gameState = {
+    level: 1,
+    gold: 0,
+    highScore: 0
+};
+
+let currentIndex = 0;
+let targetSequence = [];
 let timerInterval;
 let timeLeft = TIME_LIMIT;
-
-let targetSequence = []; // Array to store the sorted random numbers we need to click
-let currentIndex = 0; // Current index in targetSequence we are looking for
 
 const LEVEL_WALLPAPERS = [
     './wallpapers/wallpaper_1.jpg',
@@ -48,6 +57,26 @@ const LEVEL_WALLPAPERS = [
     './wallpapers/wallpaper_9.jpg',
     './wallpapers/wallpaper_10.jpg'
 ];
+
+// Persistence Logic
+function saveGame() {
+    localStorage.setItem('number_clicker_state', JSON.stringify(gameState));
+}
+
+function loadGame() {
+    const saved = localStorage.getItem('number_clicker_state');
+    if (saved) {
+        gameState = JSON.parse(saved);
+        updateUI();
+    }
+}
+
+function updateUI() {
+    levelDisplay.textContent = gameState.level;
+    goldDisplay.textContent = gameState.gold;
+    btnHint.disabled = gameState.gold < HINT_COST;
+    btnTime.disabled = gameState.gold < TIME_COST;
+}
 
 // Function to shuffle an array (Fisher-Yates shuffle)
 function shuffle(array) {
@@ -147,6 +176,41 @@ function handleGameOver() {
     });
 }
 
+// Power-up Handlers
+function useHint() {
+    if (gameState.gold >= HINT_COST) {
+        gameState.gold -= HINT_COST;
+        updateUI();
+        saveGame();
+
+        const targetNum = targetSequence[currentIndex];
+        const targetCell = Array.from(document.querySelectorAll('.number-cell')).find(cell => parseInt(cell.dataset.number) === targetNum);
+
+        if (targetCell) {
+            targetCell.classList.add('hint-highlight');
+            setTimeout(() => {
+                targetCell.classList.remove('hint-highlight');
+            }, 3000);
+        }
+    }
+}
+
+function addTime() {
+    if (gameState.gold >= TIME_COST) {
+        gameState.gold -= TIME_COST;
+        timeLeft += 10;
+        timerDisplay.textContent = timeLeft;
+        updateUI();
+        saveGame();
+
+        // Visual feedback for time added
+        timerDisplay.style.color = '#38ef7d';
+        setTimeout(() => {
+            timerDisplay.style.color = '#ff4757';
+        }, 1000);
+    }
+}
+
 // Function to handle clicking a number
 function handleNumberClick(event) {
     const clickedElement = event.target;
@@ -158,6 +222,7 @@ function handleNumberClick(event) {
     // Check against the current expected number in the random sequence
     if (clickedNumber === targetSequence[currentIndex]) {
         clickedElement.classList.add('clicked');
+        clickedElement.classList.remove('hint-highlight'); // Remove hint if it was there
 
         // Spawn particles at click position
         const rect = clickedElement.getBoundingClientRect();
@@ -184,14 +249,18 @@ function handleNumberClick(event) {
 
 // Function to handle level completion
 function levelComplete() {
-    if (currentLevel >= MAX_LEVEL) {
+    // Reward Gold: Base 10 + (Remaining time / 2)
+    const reward = 10 + Math.floor(timeLeft / 2);
+    gameState.gold += reward;
+
+    if (gameState.level >= MAX_LEVEL) {
         // Game Won
         winScreen.classList.remove('hidden');
         triggerWinConfetti();
+        gameState.level = 1; // Reset for next play
     } else {
         // Advance to the next level
-        currentLevel++;
-        levelDisplay.textContent = currentLevel;
+        gameState.level++;
 
         // Adding confetti for level complete
         confetti({
@@ -200,30 +269,23 @@ function levelComplete() {
             origin: { y: 0.6 }
         });
 
-        // Use custom modal instead of alert
         setTimeout(() => {
-            // Simply auto-start next level or show a quick success message?
-            // User said: "không cần hiện nút xác nhận khi hoàn thành... thay bằng xac nhận bên trong trang web"
-            // But also said "limit thời hạn... nếu quá thơi gian thì game sẽ reset"
-            // Interpretation: Don't use window.alert. Use smooth transition or in-game UI.
-            // We can show a temporary toast or just proceed after a short delay, but a modal is explicitly requested "thay bằng xac nhận bên trong trang web".
-            // Actually, re-reading: "không cần hiện nút xác nhận khi hoàn thành ... thay bằng xac nhận bên trong trang web"
-            // This implies they DO want a confirmation, but NOT a native alert.
-
-            showModal("Level Complete!", `Ready for Level ${currentLevel}?`, "Start Next Level", () => {
+            showModal("Level Complete!", `You earned 💰 ${reward} gold! Ready for Level ${gameState.level}?`, "Start Next Level", () => {
                 createLevel();
             });
         }, 500);
     }
+    updateUI();
+    saveGame();
 }
 
 // Function to create and set up a level
 function createLevel() {
     gameBoard.innerHTML = ''; // Clear the board
+    updateUI();
 
     // Set background wallpaper for the level
-    // Use (currentLevel - 1) % LEVEL_WALLPAPERS.length to cycle if we go past 10, though max is 10.
-    const wallpaperUrl = LEVEL_WALLPAPERS[(currentLevel - 1) % LEVEL_WALLPAPERS.length];
+    const wallpaperUrl = LEVEL_WALLPAPERS[(gameState.level - 1) % LEVEL_WALLPAPERS.length];
     document.body.style.backgroundImage = `url('${wallpaperUrl}')`;
 
     // Generate random numbers
@@ -255,17 +317,20 @@ function createLevel() {
 
 // Function to reset and start the game
 function resetGame() {
-    currentLevel = 1;
+    gameState.level = 1;
+    gameState.gold = Math.floor(gameState.gold / 2); // Penalty: lose half gold on game over
     currentIndex = 0;
-    levelDisplay.textContent = currentLevel;
     winScreen.classList.add('hidden');
-    // Ensure modal is hidden
     messageModal.classList.add('hidden');
     createLevel();
+    saveGame();
 }
 
 // Event Listeners
 playAgainButton.addEventListener('click', resetGame);
+btnHint.addEventListener('click', useHint);
+btnTime.addEventListener('click', addTime);
 
 // Initial game start
+loadGame();
 createLevel();
