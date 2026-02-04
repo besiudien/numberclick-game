@@ -24,6 +24,19 @@ let timeLeft = TIME_LIMIT;
 let targetSequence = []; // Array to store the sorted random numbers we need to click
 let currentIndex = 0; // Current index in targetSequence we are looking for
 
+const LEVEL_WALLPAPERS = [
+    'https://images.unsplash.com/photo-1498931299472-f7a63a5a1cfa?auto=format&fit=crop&q=80&w=1920',
+    'https://images.unsplash.com/photo-1513297887119-d46091b24bfa?auto=format&fit=crop&q=80&w=1920',
+    'https://images.unsplash.com/photo-1515995301990-280d37b2a8c9?auto=format&fit=crop&q=80&w=1920',
+    'https://images.unsplash.com/photo-1714384895745-c50ce042f394?auto=format&fit=crop&q=80&w=1920',
+    'https://images.unsplash.com/photo-1639501252219-130096b7b904?auto=format&fit=crop&q=80&w=1920',
+    'https://images.unsplash.com/photo-1546271876-af6caec5fae5?auto=format&fit=crop&q=80&w=1920',
+    'https://images.unsplash.com/photo-1703934915711-439a6d16a1f3?auto=format&fit=crop&q=80&w=1920',
+    'https://images.unsplash.com/photo-1482329833197-916d32bdae74?auto=format&fit=crop&q=80&w=1920',
+    'https://images.unsplash.com/photo-1577794448376-3e5636dda79a?auto=format&fit=crop&q=80&w=1920',
+    'https://images.unsplash.com/photo-1700909591006-a78674596074?auto=format&fit=crop&q=80&w=1920'
+];
+
 // Function to shuffle an array (Fisher-Yates shuffle)
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -195,6 +208,11 @@ function levelComplete() {
 // Function to create and set up a level
 function createLevel() {
     gameBoard.innerHTML = ''; // Clear the board
+
+    // Set background wallpaper for the level
+    // Use (currentLevel - 1) % LEVEL_WALLPAPERS.length to cycle if we go past 10, though max is 10.
+    const wallpaperUrl = LEVEL_WALLPAPERS[(currentLevel - 1) % LEVEL_WALLPAPERS.length];
+    document.body.style.backgroundImage = `url('${wallpaperUrl}')`;
 
     // Generate random numbers
     const randomNumbers = generateRandomNumbers(NUMBERS_PER_LEVEL, POOL_SIZE);

@@ -5,12 +5,17 @@ body {
     align-items: center;
     justify-content: center;
     /* Center vertically */
-    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+    /* background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); Removed for dynamic wallpaper */
+    background-color: #333;
+    /* Fallback */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* animation: gradientBG 15s ease infinite; Removed */
     margin: 0;
     height: 100dvh;
-    /* Dynamic Viewport Height for iOS */
+    transition: background-image 1s ease-in-out;
+    /* Smooth transition between levels */
     overflow: hidden;
     /* No scrolling */
     color: white;
@@ -111,18 +116,26 @@ h1 {
     justify-content: center;
     align-items: center;
     height: 45px;
-    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+
+    /* Glassmorphism Style */
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6.4px);
+    -webkit-backdrop-filter: blur(6.4px);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+
     border-radius: 12px;
     cursor: pointer;
     user-select: none;
     font-family: 'Fredoka One', cursive;
-    color: #333;
+    color: white;
+    /* White text for better contrast on dark/colorful backgrounds */
     font-size: 1.2em;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 -2px 5px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
-    text-shadow: none;
     opacity: 0;
     animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     -webkit-tap-highlight-color: transparent;
@@ -146,7 +159,9 @@ h1 {
         transform: translateY(-5px) scale(1.1);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 6px rgba(0, 0, 0, 0.23);
         z-index: 10;
-        background: white;
+        background: rgba(255, 255, 255, 0.45);
+        /* Brighter glass */
+        border-color: rgba(255, 255, 255, 0.8);
     }
 }
 
@@ -185,14 +200,16 @@ h1 {
 @keyframes clickPop {
     0% {
         transform: scale(1);
-        background-color: #ffd700;
+        background-color: rgba(255, 215, 0, 0.7);
+        /* Gold glass */
         color: white;
+        border-color: #ffd700;
     }
 
     50% {
         transform: scale(1.4);
         opacity: 1;
-        box-shadow: 0 0 20px #ffd700;
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
     }
 
     100% {
